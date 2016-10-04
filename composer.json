@@ -1,5 +1,12 @@
 {
     "require": {
-        "silex/silex": "^2.0"
-    }
+        "silex/silex": "^2.0",
+        "symfony/serializer": "^3.1"
+    },
+	"config": {
+		"bin-dir": "bin/"
+	},
+	"autoload": {
+		"psr-0" : {"AGR": "src/"}
+	}
 }
