@@ -1,0 +1,10 @@
+{% extends "leiaute.twig" %}
+
+{% block titulo %}Projeto Silex e API{% endblock %}
+{% block tituloPanel %}Produto Atualizado{% endblock %}
+
+{% block conteudo %}
+<h1>Produto de id {{id}} atualizado com sucesso!</h1>
+<br>
+<a href="{{path('produtos')}}">Voltar</a>
+{% endblock %}

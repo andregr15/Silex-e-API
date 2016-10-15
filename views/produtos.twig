@@ -1,0 +1,31 @@
+{% extends "leiaute.twig" %}
+
+{% block titulo %}Projeto Silex e API Produtos{% endblock %}
+{% block tituloPanel %}Produtos{% endblock %}
+{% block conteudo %}
+
+<tr>
+  <th>ID</th>
+  <th>Nome</th>
+  <th>Descrição</th>
+  <th>Valor</th>
+  <th></th>
+  <th></th>
+</tr>
+  {% for produto in produtos %}
+  <tr>
+      <td>{{ produto.id }}</td>
+      <td>{{ produto.nome }}</td>
+      <td>{{ produto.descricao }}</td>
+      <td>{{ produto.valor }}</td>
+      <td><a href={{ path('editarProduto', { id: produto.id }) }}>Editar</a><br/></td>
+      <td><a href={{ path('excluirProduto', { id: produto.id }) }}>Excluir</a><br/></td>
+  </tr>
+  {% else %}
+  <tr>
+      <td>no produto found</td>
+  </tr>
+  {% endfor %}
+  <br>
+  <a href="{{path('novoProduto')}}">Novo produto</a>
+{% endblock %}

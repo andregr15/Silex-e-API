@@ -1,0 +1,20 @@
+{% extends "leiaute.twig" %}
+
+{% block titulo %}Projeto Silex e API{% endblock %}
+{% block tituloPanel %}Novo Produto{% endblock %}
+
+{% block conteudo %}
+<form action="{{path('incluirProduto')}}" method="post">
+  <fieldset>
+   <center>
+      Nome:<br>
+      <input type="text" name="nome"><br>
+      Descricao:<br>
+      <textarea name="descricao" rows="4" cols="50"></textarea><br>
+      Valor:<br>
+      <input type="number" name="valor" max="999999999999.99" step="0.01"><br>
+      <input type="submit" value="Salvar">
+    </center>
+  </fieldset>
+</form>
+{% endblock %}
