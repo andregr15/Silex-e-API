@@ -12,6 +12,6 @@
 		"bin-dir": "bin/"
 	},
 	"autoload": {
-		"psr-0" : {"AGR": "src/"}
+		"psr-4" : {"AGR\\": "src/"}
 	}
 }

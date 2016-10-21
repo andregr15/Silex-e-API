@@ -35,13 +35,13 @@ class ProdutoMapper extends EntityRepository
 
   public function update(Produto $produto){
     $this->getEntityManager()->merge($produto);
-    $this->getEntityManager()->flush($produto);
+    $this->getEntityManager()->flush();
     return $produto;
   }
 
   public function delete(Produto $produto){
     $this->getEntityManager()->remove($produto);
-    $this->getEntityManager()->flush($produto);
+    $this->getEntityManager()->flush();
     return $produto;
   }
 
