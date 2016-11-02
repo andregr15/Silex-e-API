@@ -3,12 +3,6 @@
 namespace AGR\Mapper;
 
 use AGR\Entity\Produto;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
-
 use Doctrine\ORM\EntityRepository;
 
 class ProdutoMapper extends EntityRepository
@@ -18,9 +12,9 @@ class ProdutoMapper extends EntityRepository
       throw new InvalidArgumentException("Id inválido");
     }
 
-    $post = $this->findOneById($id);
+    $produto = $this->findOneById($id);
 
-    return $post;
+    return $produto;
   }
 
   public function supportsClass($class){

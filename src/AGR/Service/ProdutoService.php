@@ -20,7 +20,9 @@ class ProdutoService{
     }
 
     public function inserirProduto(array $dados){
-        $this->produto = new Produto(null, $dados['nome'], $dados['descricao'], $dados['valor']);
+        $this->produto->setNome($dados['nome']);
+        $this->produto->setDescricao($dados['descricao']);
+        $this->produto->setValor($dados['valor']);
         return $this->produtoMapper->insert($this->produto);
     }
 
@@ -31,7 +33,7 @@ class ProdutoService{
         $this->produto->setDescricao($dados['descricao']);
         $this->produto->setValor($dados['valor']);
 
-        return $this->produtoMapper->update( $this->produto);
+        return $this->produtoMapper->update($this->produto);
     }
 
      public function excluirProduto($id){    

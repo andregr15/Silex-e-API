@@ -1,12 +1,29 @@
 <?php
 
 namespace AGR\Entity;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="cliente")
+ * @ORM\Entity(repositoryClass="AGR\Mapper\ClienteMapper")
+ */
 class Cliente
 {
+    /**
+    * @ORM\Id
+    * @ORM\Column(type="integer")
+    * @ORM\GeneratedValue
+    */
     private $id;
+
+    /** @ORM\Column(length=100) */
     private $nome;
+
+    /** @ORM\Column(length=20) */
     private $documento;
+
+    /** @ORM\Column(length=100) */
     private $email;
 
     public function __construct($id, $nome, $documento, $email) {
@@ -30,6 +47,18 @@ class Cliente
 
     public function getEmail(){
         return $this->email;
+    }
+
+    public function setNome($nome){
+        $this->nome = $nome;
+    }
+
+    public function setDocumento($documento){
+        $this->documento = $documento;
+    }
+
+    public function setEmail($email){
+        $this->email = $email;
     }
 }
 
