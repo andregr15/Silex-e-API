@@ -34,20 +34,6 @@ class ClienteValidator extends Validator{
         $this->setErrors($this->validator->validate($this->dados, $constraint));
         return $this->errors;
     }
-
-    function validateId($id){
-        $this->dados = array();
-        $this->dados['id'] = $id;
-        
-        $constraint = new Assert\Collection(
-            array(
-                      'id' => array(new Assert\NotBlank(), new Assert\Regex('/^[0-9]+$/'))
-                 )
-        );
-       
-        $this->setErrors($this->validator->validate($this->dados, $constraint));
-        return $this->errors;
-    }
 }
 
 ?>

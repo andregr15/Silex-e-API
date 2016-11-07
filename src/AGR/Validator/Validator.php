@@ -2,6 +2,7 @@
 namespace AGR\Validator;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
 
 abstract class Validator{
     protected $dados;
@@ -27,7 +28,19 @@ abstract class Validator{
 
     abstract function validateUpdateData(Request $request);
 
-    abstract function validateId($id);
+    function validateId($id){
+        $this->dados = array();
+        $this->dados['id'] = $id;
+        
+        $constraint = new Assert\Collection(
+            array(
+                      'id' => array(new Assert\NotBlank(), new Assert\Regex(array('pattern'=>'/^[0-9]+$/', 'message' => 'This value should be of type integer')))
+                 )
+        );
+       
+        $this->setErrors($this->validator->validate($this->dados, $constraint));
+        return $this->errors;
+    }
 }
 
 ?>
