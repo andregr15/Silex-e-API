@@ -14,6 +14,8 @@ $app['debug'] = true;
 
 $app->register(new Silex\Provider\SerializerServiceProvider());
 
+$app->register(new Silex\Provider\ValidatorServiceProvider());
+
 $paths = array(__DIR__. DIRECTORY_SEPARATOR . '../src/');
 $isDevMode = false;
 

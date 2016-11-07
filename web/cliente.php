@@ -2,6 +2,7 @@
 
 use AGR\Entity\Cliente;
 use AGR\Service\ClienteService;
+use AGR\Validator\ClienteValidator;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -43,17 +44,20 @@ $clientes->get('/', function(Silex\Application $app){
 //listando apenas um cliente
 $clientes->get('/{id}', function(Silex\Application $app, $id){
    try{
-        if(is_numeric($id)){
-          $cliente = $app['cliente_service']->buscarClientePeloId($id);
-          if(!isset($cliente)){
-            return $app->json(array('clientes api' => 'não existe cliente cadastrado com o id '.$id.'!'));
-          }
-
-          $response = new Response($app['serializer']->serialize($cliente, 'json'));
-          $response->headers->set('Content-Type', 'application/json');
-          return $response;
+        $validator = new ClienteValidator($app['validator']);
+        $errors = $validator->validateId($id);
+        if (count($errors) > 0) {
+          return $app->json($errors);
         }
-        return $app->json(array('clientes api' => 'o id deve ser um número inteiro e positivo'));
+        
+        $cliente = $app['cliente_service']->buscarClientePeloId($id);
+        if(!isset($cliente)){
+          return $app->json(array('clientes api' => 'não existe cliente cadastrado com o id '.$id.'!'));
+        }
+
+        $response = new Response($app['serializer']->serialize($cliente, 'json'));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
     catch(Exception $e) {
         $app->json(array('clientes api' => 'Erro ao exibir um cliente: '.  $e->getMessage(). "\n"), 500);
@@ -64,37 +68,22 @@ $clientes->get('/{id}', function(Silex\Application $app, $id){
 //atualizar apenas um cliente
 $clientes->put('/{id}', function(Silex\Application $app, Request $request, $id){
    try{
-        if(is_numeric($id)){
-          $cliente = $app['cliente_service']->buscarClientePeloId($id);
-          
-          if(!isset($cliente)){
-            return $app->json(array('clientes api' => 'não existe cliente cadastrado com o id '.$id.'!'));
-          }
-
-          $dados['id'] = $id;
-          $dados['nome'] = $request->get('nome');
-          $dados['documento'] = $request->get('documento');
-          $dados['email'] = $request->get('email');
-
-          if(!isset($dados['nome'])){
-            return $app->json(array('clientes api' => 'parâmetro nome é obrigatório!'));
-          } 
-          
-          if(!isset($dados['documento'])){
-            return $app->json(array('clientes api' => 'parâmetro documento é obrigatório!'));
-          } 
-            
-          if(!isset($dados['email'])){
-            return $app->json(array('clientes api' => 'parâmetro email é obrigatório!'));
-          } 
-
-          $cliente = $app['cliente_service']->atualizarCliente($dados);
-        
-          if(isset($cliente)){
-            return $app->json(array('clientes api' => 'cliente de id '.$id.' atualizado com sucesso!'));
-          }
+        $validator = new ClienteValidator($app['validator']);
+        $errors = $validator->validateInsertData($request, $id);
+        if (count($errors) > 0) {
+          return $app->json($errors);
         }
-        return $app->json(array('clientes api' => 'o id deve ser um número inteiro e positivo'));
+
+        $cliente = $app['cliente_service']->buscarClientePeloId($id);
+        if(!isset($cliente)){
+          return $app->json(array('clientes api' => 'não existe cliente cadastrado com o id '.$id.'!'));
+        }
+
+        $cliente = $app['cliente_service']->atualizarCliente($validator->getDados());
+
+        if(isset($cliente)){
+          return $app->json(array('clientes api' => 'cliente de id '.$id.' atualizado com sucesso!'));
+        }
     }
     catch(Exception $e) {
         $app->json(array('clientes api' => 'Erro ao atualizar um cliente: '.  $e->getMessage(). "\n"), 500);
@@ -104,27 +93,17 @@ $clientes->put('/{id}', function(Silex\Application $app, Request $request, $id){
 //inserir um cliente
 $clientes->post('/', function(Silex\Application $app, Request $request){
    try{
-            $dados['nome'] = $request->request->get('nome');
-            $dados['documento'] = $request->request->get('documento');
-            $dados['email'] = $request->request->get('email'); 
-    
-            if(!isset($dados['nome'])){
-                return $app->json(array('clientes api' => 'parâmetro nome é obrigatório!'));
-            } 
-            
-            if(!isset($dados['documento'])){
-                return $app->json(array('clientes api' => 'parâmetro documento é obrigatório!'));
-            } 
-                
-            if(!isset($dados['email'])){
-                return $app->json(array('clientes api' => 'parâmetro email é obrigatório!'));
-            } 
+        $validator = new ClienteValidator($app['validator']);
+        $errors = $validator->validateUpdateData($request);
+        if (count($errors) > 0) {
+          return $app->json($errors);
+        }
 
-            $cliente = $app['cliente_service']->inserirCliente($dados);
-            
-            if(isset($cliente)){
-                return $app->json(array('clientes api' => 'cliente de id '.$cliente->getId().' inserido com sucesso!'));
-            }
+        $cliente = $app['cliente_service']->inserirCliente($validator->getDados());
+
+        if(isset($cliente)){
+          return $app->json(array('clientes api' => 'cliente de id '.$cliente->getId().' inserido com sucesso!'));
+        }
     }
     catch(Exception $e) {
         $app->json(array('clientes api' => 'Erro ao inserir um cliente: '.  $e->getMessage(). "\n"), 500);
@@ -134,19 +113,22 @@ $clientes->post('/', function(Silex\Application $app, Request $request){
 //excluindo um cliente
 $clientes->delete('/{id}', function(Silex\Application $app, $id){
    try{
-        if(is_numeric($id)){
-          $cliente = $app['cliente_service']->buscarClientePeloId($id);
-          if(!isset($cliente)){
-            return $app->json(array('clientes api' => 'não existe cliente cadastrado com o id '.$id.'!'));
-          }
-
-          $cliente = $app['cliente_service']->excluirCliente($id);
-        
-          if(isset($cliente)){
-            return $app->json(array('clientes api' => 'cliente de id '.$id.' excluido com sucesso!'));
-          }
+        $validator = new ClienteValidator($app['validator']);
+        $errors = $validator->validateId($id);
+        if (count($errors) > 0) {
+          return $app->json($errors);
         }
-        return $app->json(array('clientes api' => 'o id deve ser um número inteiro e positivo'));
+        
+        $cliente = $app['cliente_service']->buscarClientePeloId($id);
+        if(!isset($cliente)){
+          return $app->json(array('clientes api' => 'não existe cliente cadastrado com o id '.$id.'!'));
+        }
+
+        $cliente = $app['cliente_service']->excluirCliente($id);
+
+        if(isset($cliente)){
+          return $app->json(array('clientes api' => 'cliente de id '.$id.' excluido com sucesso!'));
+        }
     }
     catch(Exception $e) {
         $app->json(array('clientes api' => 'Erro ao excluir um cliente: '.  $e->getMessage(). "\n"), 500);
