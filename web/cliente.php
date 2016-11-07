@@ -15,6 +15,11 @@ $app['cliente_service'] = function() use ($em){
       return $service;
 };
 
+$app['cliente_validator'] = function($app){
+    $validator = new ClienteValidator($app['validator']);
+    return $validator;
+};
+
 //fixture
 $clientes->get('/fixture', function(Silex\Application $app) use($em) {
   try{
@@ -44,8 +49,7 @@ $clientes->get('/', function(Silex\Application $app){
 //listando apenas um cliente
 $clientes->get('/{id}', function(Silex\Application $app, $id){
    try{
-        $validator = new ClienteValidator($app['validator']);
-        $errors = $validator->validateId($id);
+        $errors = $app['cliente_validator']->validateId($id);
         if (count($errors) > 0) {
           return $app->json($errors);
         }
@@ -64,12 +68,10 @@ $clientes->get('/{id}', function(Silex\Application $app, $id){
     }
 })->bind("listarCliente");
 
-
 //atualizar apenas um cliente
 $clientes->put('/{id}', function(Silex\Application $app, Request $request, $id){
    try{
-        $validator = new ClienteValidator($app['validator']);
-        $errors = $validator->validateInsertData($request, $id);
+        $errors = $app['cliente_validator']->validateInsertData($request, $id);
         if (count($errors) > 0) {
           return $app->json($errors);
         }
@@ -79,7 +81,7 @@ $clientes->put('/{id}', function(Silex\Application $app, Request $request, $id){
           return $app->json(array('clientes api' => 'não existe cliente cadastrado com o id '.$id.'!'));
         }
 
-        $cliente = $app['cliente_service']->atualizarCliente($validator->getDados());
+        $cliente = $app['cliente_service']->atualizarCliente($app['cliente_validator']->getDados());
 
         if(isset($cliente)){
           return $app->json(array('clientes api' => 'cliente de id '.$id.' atualizado com sucesso!'));
@@ -93,13 +95,12 @@ $clientes->put('/{id}', function(Silex\Application $app, Request $request, $id){
 //inserir um cliente
 $clientes->post('/', function(Silex\Application $app, Request $request){
    try{
-        $validator = new ClienteValidator($app['validator']);
-        $errors = $validator->validateUpdateData($request);
+        $errors = $app['cliente_validator']->validateUpdateData($request);
         if (count($errors) > 0) {
           return $app->json($errors);
         }
 
-        $cliente = $app['cliente_service']->inserirCliente($validator->getDados());
+        $cliente = $app['cliente_service']->inserirCliente($app['cliente_validator']->getDados());
 
         if(isset($cliente)){
           return $app->json(array('clientes api' => 'cliente de id '.$cliente->getId().' inserido com sucesso!'));
@@ -113,8 +114,7 @@ $clientes->post('/', function(Silex\Application $app, Request $request){
 //excluindo um cliente
 $clientes->delete('/{id}', function(Silex\Application $app, $id){
    try{
-        $validator = new ClienteValidator($app['validator']);
-        $errors = $validator->validateId($id);
+        $errors = $app['cliente_validator']->validateId($id);
         if (count($errors) > 0) {
           return $app->json($errors);
         }

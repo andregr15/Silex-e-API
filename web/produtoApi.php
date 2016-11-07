@@ -12,8 +12,13 @@ require_once 'bootstrap.php';
 $produtos = $app['controllers_factory'];
 
 $app['produto_service'] = function() use ($em){
-      $service = new ProdutoService(new Produto(null, null, null, null), $em->getRepository('AGR\Entity\Produto'));
-      return $service;
+    $service = new ProdutoService(new Produto(null, null, null, null), $em->getRepository('AGR\Entity\Produto'));
+    return $service;
+};
+
+$app['produto_validator'] = function($app){
+    $validator = new ProdutoValidator($app['validator']);
+    return $validator;
 };
 
 //listando todos os produtos
@@ -32,8 +37,7 @@ $produtos->get('/', function(Silex\Application $app){
 //listando apenas um produto
 $produtos->get('/{id}', function(Silex\Application $app, $id){
    try{
-        $validator = new ProdutoValidator($app['validator']);
-        $errors = $validator->validateId($id);
+        $errors = $app['produto_validator']->validateId($id);
         if (count($errors) > 0) {
             return $app->json($errors);
         }
@@ -52,12 +56,10 @@ $produtos->get('/{id}', function(Silex\Application $app, $id){
     }
 })->bind("listarProduto");
 
-
 //atualizar apenas um produto
 $produtos->put('/{id}', function(Silex\Application $app, Request $request, $id){
    try{
-        $validator = new ProdutoValidator($app['validator']);
-        $errors = $validator->validateInsertData($request, $id);
+        $errors = $app['produto_validator']->validateInsertData($request, $id);
         
         if (count($errors) > 0) {
             return $app->json($errors);
@@ -68,7 +70,7 @@ $produtos->put('/{id}', function(Silex\Application $app, Request $request, $id){
             return $app->json(array('produtos api' => 'não existe produto cadastrado com o id '.$id.'!'));
         }
 
-        $produto = $app['produto_service']->atualizarProduto($validator->getDados());
+        $produto = $app['produto_service']->atualizarProduto($app['produto_validator']->getDados());
         
         if(isset($produto)){
           return $app->json(array('produtos api' => 'produto de id '.$id.' atualizado com sucesso!'));
@@ -82,13 +84,12 @@ $produtos->put('/{id}', function(Silex\Application $app, Request $request, $id){
 //inserir um produto
 $produtos->post('/', function(Silex\Application $app, Request $request){
    try{
-        $validator = new ProdutoValidator($app['validator']);
-        $errors = $validator->validateUpdateData($request);
+        $errors = $app['produto_validator']->validateUpdateData($request);
         if (count($errors) > 0) {
             return $app->json($errors);
         }
 
-        $produto = $app['produto_service']->inserirProduto($validator->getDados());
+        $produto = $app['produto_service']->inserirProduto($app['produto_validator']->getDados());
         
         if(isset($produto)){
             return $app->json(array('produtos api' => 'produto de id '.$produto->getId().' inserido com sucesso!'));
@@ -102,8 +103,7 @@ $produtos->post('/', function(Silex\Application $app, Request $request){
 //excluindo um produto
 $produtos->delete('/{id}', function(Silex\Application $app, $id){
    try{
-        $validator = new ProdutoValidator($app['validator']);
-        $errors = $validator->validateId($id);
+        $errors = $app['produto_validator']->validateId($id);
         if (count($errors) > 0) {
             return $app->json($errors);
         }
