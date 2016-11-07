@@ -24,7 +24,12 @@ abstract class Validator{
         }
     }
 
-    abstract function validateInsertData(Request $request, $id);
+    function validateInsertData(Request $request, $id){
+        $this->validateId($id);
+        $this->validateUpdateData($request);
+        $this->dados['id'] = $id;
+        return $this->errors;
+    }
 
     abstract function validateUpdateData(Request $request);
 

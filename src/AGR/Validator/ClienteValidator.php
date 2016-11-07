@@ -10,13 +10,6 @@ class ClienteValidator extends Validator{
         parent::__construct($validator);
     }
     
-    function validateInsertData(Request $request, $id){
-        $this->validateId($id);
-        $this->validateUpdateData($request);
-        $this->dados['id'] = $id;
-        return $this->errors;
-    }
-
     function validateUpdateData(Request $request){
         $this->dados = array();
         $this->dados['nome'] = $request->request->get('nome');
