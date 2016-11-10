@@ -28,7 +28,9 @@ class ProdutoMapper extends EntityRepository
   }
 
   public function update(Produto $produto){
-    $this->getEntityManager()->merge($produto);
+    if($this->getEntityManager()->getUnitOfWork()->getEntityState($produto) != UnitOfWork::STATE_MANAGED){
+      $this->getEntityManager()->merge($produto);
+    }
     $this->getEntityManager()->flush();
     return $produto;
   }

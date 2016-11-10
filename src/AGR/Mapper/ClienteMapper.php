@@ -28,7 +28,9 @@ class ClienteMapper extends EntityRepository
   }
 
   public function update(Cliente $cliente){
-    $this->getEntityManager()->merge($cliente);
+    if($this->getEntityManager()->getUnitOfWork()->getEntityState($cliente) != UnitOfWork::STATE_MANAGED){
+      $this->getEntityManager()->merge($cliente);
+    }
     $this->getEntityManager()->flush();
     return $cliente;
   }
