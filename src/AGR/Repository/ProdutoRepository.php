@@ -1,11 +1,10 @@
 <?php
-
-namespace AGR\Mapper;
+namespace AGR\Repository;
 
 use AGR\Entity\Produto;
 use Doctrine\ORM\EntityRepository;
 
-class ProdutoMapper extends EntityRepository
+class ProdutoRepository extends EntityRepository
 {
   public function loadProdutoById($id){
     if(!$id){
@@ -15,6 +14,23 @@ class ProdutoMapper extends EntityRepository
     $produto = $this->findOneById($id);
 
     return $produto;
+  }
+
+  
+  public function findAllShortedById(){
+    return $this
+                ->getEntityManager()
+                ->createQuery('select p from AGR\Entity\Produto p order by p.id asc')
+                ->getResult();
+  }
+
+   public function findPaged($pages, $numByPage){
+      $query = $this
+                    ->getEntityManager()
+                    ->createQuery('select p from AGR\Entity\Produto p ')
+                    ->setFirstResult( ( $numByPage * ($pages-1) ) )
+                    ->setMaxResults( $numByPage );
+      return new \Doctrine\ORM\Tools\Pagination\Paginator($query);  
   }
 
   public function supportsClass($class){
@@ -28,9 +44,7 @@ class ProdutoMapper extends EntityRepository
   }
 
   public function update(Produto $produto){
-    if($this->getEntityManager()->getUnitOfWork()->getEntityState($produto) != UnitOfWork::STATE_MANAGED){
-      $this->getEntityManager()->merge($produto);
-    }
+    $this->getEntityManager()->persist($produto);
     $this->getEntityManager()->flush();
     return $produto;
   }
@@ -46,6 +60,10 @@ class ProdutoMapper extends EntityRepository
     $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0;');
     $connection->executeUpdate($platform->getTruncateTableSQL("produto","true"));
     $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1;');
+  }
+
+  public function getReference($path, $id){
+    return $this->getEntityManager()->getReference($path, $id);
   }
 }
 

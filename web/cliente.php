@@ -46,6 +46,19 @@ $clientes->get('/', function(Silex\Application $app){
     }
 })->bind("listarClientes");
 
+//listando todos os clientes paginados
+$clientes->get('/paginado/{pages}/{qtd}', function(Silex\Application $app, $pages, $qtd){
+   try{
+        $clientes = $app['cliente_service']->findPaged($pages, $qtd);
+        $response = new Response($app['serializer']->serialize($clientes, 'json'));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+    catch(Exception $e) {
+        $app->json(array('clientes api' => 'Erro ao exibir todos os clientes: '.  $e->getMessage(). "\n"), 500);
+    }
+})->bind("listarClientesPaged");
+
 //listando apenas um cliente
 $clientes->get('/{id}', function(Silex\Application $app, $id){
    try{

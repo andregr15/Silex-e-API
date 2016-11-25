@@ -1,11 +1,11 @@
 <?php
 
-namespace AGR\Mapper;
+namespace AGR\Repository;
 
 use AGR\Entity\Cliente;
 use Doctrine\ORM\EntityRepository;
 
-class ClienteMapper extends EntityRepository
+class ClienteRepository extends EntityRepository
 {
   public function loadClienteById($id){
     if(!$id){
@@ -15,6 +15,22 @@ class ClienteMapper extends EntityRepository
     $post = $this->findOneById($id);
 
     return $post;
+  }
+
+  public function findAllShortedById(){
+    return $this
+                ->getEntityManager()
+                ->createQuery('select c from AGR\Entity\Cliente c order by c.id asc')
+                ->getResult();
+  }
+
+   public function findPaged($pages, $numByPage){
+      $query = $this
+                    ->getEntityManager()
+                    ->createQuery('select c from AGR\Entity\Cliente c ')
+                    ->setFirstResult( ( $numByPage * ($pages-1) ) )
+                    ->setMaxResults( $numByPage );
+      return new \Doctrine\ORM\Tools\Pagination\Paginator($query);                
   }
 
   public function supportsClass($class){
@@ -28,9 +44,7 @@ class ClienteMapper extends EntityRepository
   }
 
   public function update(Cliente $cliente){
-    if($this->getEntityManager()->getUnitOfWork()->getEntityState($cliente) != UnitOfWork::STATE_MANAGED){
-      $this->getEntityManager()->merge($cliente);
-    }
+    $this->getEntityManager()->persist($cliente);
     $this->getEntityManager()->flush();
     return $cliente;
   }
@@ -46,6 +60,10 @@ class ClienteMapper extends EntityRepository
     $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 0;');
     $connection->executeUpdate($platform->getTruncateTableSQL("cliente","true"));
     $connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1;');
+  }
+
+  public function getReference($path, $id){
+    return $this->getEntityManager()->getReference($path, $id);
   }
 }
 

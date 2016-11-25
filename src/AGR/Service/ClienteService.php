@@ -3,55 +3,60 @@
 namespace AGR\Service;
 
 use AGR\Entity\Cliente;
-use AGR\Mapper\ClienteMapper;
+use AGR\Repository\ClienteRepository;
 
 class ClienteService{
 
     private $cliente;
-    private $clienteMapper;
+    private $clienteRepository;
 
-    public function __construct(Cliente $cliente, ClienteMapper $clienteMapper){
+    public function __construct(Cliente $cliente, ClienteRepository $clienteRepository){
         $this->cliente = $cliente;
-        $this->clienteMapper = $clienteMapper;
+        $this->clienteRepository = $clienteRepository;
     }
 
     public function findAll(){
-        return $this->clienteMapper->findAll();
+        return $this->clienteRepository->findAllShortedById();
+                    
+        //return $this->clienteRepository->findAll();
+    }
+
+    public function findPaged($pages, $numByPage){
+        return $this->clienteRepository->findPaged($pages, $numByPage);
     }
 
     public function inserirCliente(array $dados){
         $this->cliente->setNome($dados['nome']);
         $this->cliente->setDocumento($dados['documento']);
         $this->cliente->setEmail($dados['email']);
-        return $this->clienteMapper->insert($this->cliente);
+        return $this->clienteRepository->insert($this->cliente);
     }
 
     public function atualizarCliente(array $dados){    
-        $this->cliente = $this->clienteMapper->loadClienteById($dados['id']);
+        $cliente = $this->clienteRepository->getReference('AGR\Entity\Cliente', $dados['id']);
+        $cliente->setNome($dados['nome']);
+        $cliente->setDocumento($dados['documento']);
+        $cliente->setEmail($dados['email']);
 
-        $this->cliente->setNome($dados['nome']);
-        $this->cliente->setDocumento($dados['documento']);
-        $this->cliente->setEmail($dados['email']);
-
-        return $this->clienteMapper->update( $this->cliente);
+        return $this->clienteRepository->update($cliente);
     }
 
      public function excluirCliente($id){    
-        $this->cliente = $this->clienteMapper->loadClienteById($id);
+        $this->cliente = $this->clienteRepository->loadClienteById($id);
 
-        return $this->clienteMapper->delete($this->cliente);
+        return $this->clienteRepository->delete($this->cliente);
     }
 
     public function buscarClientePeloId($id){    
-        return $this->clienteMapper->loadClienteById($id);
+        return $this->clienteRepository->loadClienteById($id);
     }
 
     public function fixture(array $clientes, $connection){
         
-        $this->clienteMapper->clearBd($connection);
+        $this->clienteRepository->clearBd($connection);
         foreach($clientes as $cliente)
         {
-            $this->clienteMapper->insert($cliente);
+            $this->clienteRepository->insert($cliente);
         }
     }
 
