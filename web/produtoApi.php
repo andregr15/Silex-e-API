@@ -47,6 +47,19 @@ $produtos->get('/paginado/{pages}/{qtd}', function(Silex\Application $app, $page
     }
 })->bind("listarProdutosPaged");
 
+//listando produto by nome
+$produtos->get('/{nome}', function(Silex\Application $app, $nome){
+   try{
+        $produtos = $app['produto_service']->findByNome($nome);
+        $response = new Response($app['serializer']->serialize($produtos, 'json'));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+    catch(Exception $e) {
+        $app->json(array('produtos api' => 'Erro ao exibir todos os clientes: '.  $e->getMessage(). "\n"), 500);
+    }
+})->bind("listarProdutosByNome");
+
 
 //listando apenas um produto
 $produtos->get('/{id}', function(Silex\Application $app, $id){

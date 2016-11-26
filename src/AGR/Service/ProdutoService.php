@@ -19,6 +19,10 @@ class ProdutoService{
         return $this->produtoRepository->findAllShortedById();
     }
 
+    public function findByNome($nome){
+        return $this->produtoRepository->findByNome($nome);
+    }
+
     public function findPaged($pages, $numByPage){
         return $this->produtoRepository->findPaged($pages, $numByPage);
     }
@@ -27,7 +31,7 @@ class ProdutoService{
         $this->produto->setNome($dados['nome']);
         $this->produto->setDescricao($dados['descricao']);
         $this->produto->setValor($dados['valor']);
-        return $this->produtoRepository->insert($this->produto);
+        return $this->produtoRepository->insertUpdate($this->produto);
     }
 
     public function atualizarProduto(array $dados){    
@@ -36,13 +40,12 @@ class ProdutoService{
         $produto ->setDescricao($dados['descricao']);
         $produto ->setValor($dados['valor']);
 
-        return $this->produtoRepository->update($produto);
+        return $this->produtoRepository->insertUpdate($produto);
     }
 
      public function excluirProduto($id){    
-        $this->produto = $this->produtoRepository->loadProdutoById($id);
-
-        return $this->produtoRepository->delete( $this->produto);
+        $produto = $this->produtoRepository->getReference('AGR\Entity\Produto', $id);
+        return $this->produtoRepository->delete($produto);
     }
 
     public function buscarProdutoPeloId($id){    

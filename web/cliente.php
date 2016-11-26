@@ -33,6 +33,7 @@ $clientes->get('/fixture', function(Silex\Application $app) use($em) {
 })
   ->bind("_clientes");
 
+
 //listando todos os clientes
 $clientes->get('/', function(Silex\Application $app){
    try{
@@ -58,6 +59,19 @@ $clientes->get('/paginado/{pages}/{qtd}', function(Silex\Application $app, $page
         $app->json(array('clientes api' => 'Erro ao exibir todos os clientes: '.  $e->getMessage(). "\n"), 500);
     }
 })->bind("listarClientesPaged");
+
+//listando cliente by nome
+$clientes->get('/{nome}', function(Silex\Application $app, $nome){
+   try{
+        $clientes = $app['cliente_service']->findByNome($nome);
+        $response = new Response($app['serializer']->serialize($clientes, 'json'));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+    catch(Exception $e) {
+        $app->json(array('clientes api' => 'Erro ao exibir todos os clientes: '.  $e->getMessage(). "\n"), 500);
+    }
+})->bind("listarClientesByNome");
 
 //listando apenas um cliente
 $clientes->get('/{id}', function(Silex\Application $app, $id){

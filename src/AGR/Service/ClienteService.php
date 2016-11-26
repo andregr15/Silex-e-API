@@ -16,9 +16,11 @@ class ClienteService{
     }
 
     public function findAll(){
-        return $this->clienteRepository->findAllShortedById();
-                    
-        //return $this->clienteRepository->findAll();
+        return $this->clienteRepository->findAllShortedById();        
+    }
+
+     public function findByNome($nome){
+        return $this->clienteRepository->findByNome($nome);
     }
 
     public function findPaged($pages, $numByPage){
@@ -29,7 +31,7 @@ class ClienteService{
         $this->cliente->setNome($dados['nome']);
         $this->cliente->setDocumento($dados['documento']);
         $this->cliente->setEmail($dados['email']);
-        return $this->clienteRepository->insert($this->cliente);
+        return $this->clienteRepository->insertUpdate($this->cliente);
     }
 
     public function atualizarCliente(array $dados){    
@@ -38,13 +40,12 @@ class ClienteService{
         $cliente->setDocumento($dados['documento']);
         $cliente->setEmail($dados['email']);
 
-        return $this->clienteRepository->update($cliente);
+        return $this->clienteRepository->insertUpdate($cliente);
     }
 
      public function excluirCliente($id){    
-        $this->cliente = $this->clienteRepository->loadClienteById($id);
-
-        return $this->clienteRepository->delete($this->cliente);
+        $cliente = $this->clienteRepository->getReference('AGR\Entity\Cliente', $id);
+        return $this->clienteRepository->delete($cliente);
     }
 
     public function buscarClientePeloId($id){    

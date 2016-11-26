@@ -16,6 +16,9 @@ class ProdutoRepository extends EntityRepository
     return $produto;
   }
 
+  public function findProdutoByNome($nome){
+    return $this->findByNome($nome);
+  }
   
   public function findAllShortedById(){
     return $this
@@ -37,13 +40,7 @@ class ProdutoRepository extends EntityRepository
     return $class === 'AGR\Entity\Produto';
   }
 
-  public function insert(Produto $produto){
-    $this->getEntityManager()->persist($produto);
-    $this->getEntityManager()->flush();
-    return $produto;
-  }
-
-  public function update(Produto $produto){
+  public function insertUpdate(Produto $produto){
     $this->getEntityManager()->persist($produto);
     $this->getEntityManager()->flush();
     return $produto;

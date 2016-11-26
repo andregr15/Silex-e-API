@@ -12,9 +12,13 @@ class ClienteRepository extends EntityRepository
       throw new InvalidArgumentException("Id inválido");
     }
 
-    $post = $this->findOneById($id);
+    $cliente = $this->findOneById($id);
 
-    return $post;
+    return $cliente;
+  }
+
+  public function findClienteByNome($nome){
+    return $this->findByNome($nome);
   }
 
   public function findAllShortedById(){
@@ -37,13 +41,7 @@ class ClienteRepository extends EntityRepository
     return $class ===  'AGR\Entity\Cliente';
   }
 
-  public function insert(Cliente $cliente){
-    $this->getEntityManager()->persist($cliente);
-    $this->getEntityManager()->flush();
-    return $cliente;
-  }
-
-  public function update(Cliente $cliente){
+  public function insertUpdate(Cliente $cliente){
     $this->getEntityManager()->persist($cliente);
     $this->getEntityManager()->flush();
     return $cliente;
