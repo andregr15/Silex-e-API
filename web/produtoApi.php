@@ -43,7 +43,7 @@ $produtos->get('/paginado/{pages}/{qtd}', function(Silex\Application $app, $page
         return $response;
     }
     catch(Exception $e) {
-        $app->json(array('produtos api' => 'Erro ao exibir todos os clientes: '.  $e->getMessage(). "\n"), 500);
+        $app->json(array('produtos api' => 'Erro ao exibir todos os produtos: '.  $e->getMessage(). "\n"), 500);
     }
 })->bind("listarProdutosPaged");
 
@@ -56,7 +56,7 @@ $produtos->get('/{nome}', function(Silex\Application $app, $nome){
         return $response;
     }
     catch(Exception $e) {
-        $app->json(array('produtos api' => 'Erro ao exibir todos os clientes: '.  $e->getMessage(). "\n"), 500);
+        $app->json(array('produtos api' => 'Erro ao exibir todos os produtos: '.  $e->getMessage(). "\n"), 500);
     }
 })->bind("listarProdutosByNome");
 
