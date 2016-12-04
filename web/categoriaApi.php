@@ -61,7 +61,7 @@ $categoria->get('/paginado/{pages}/{qtd}', function(Silex\Application $app, $pag
 })->bind("listarCategoriasPaged");
 
 //listando categoria by nome
-$categoria->get('/{nome}', function(Silex\Application $app, $nome){
+$categoria->get('/nome/{nome}', function(Silex\Application $app, $nome){
    try{
         $categorias = $app['categoria_service']->findByNome($nome);
         $response = new Response($app['serializer']->serialize($categorias, 'json'));

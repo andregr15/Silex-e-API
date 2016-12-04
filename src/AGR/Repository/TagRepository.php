@@ -20,7 +20,7 @@ class TagRepository extends EntityRepository
     return $this->findByNome($nome);
   }
   
-  public function findAllShortedById(){
+  public function findAllSortedById(){
     return $this
                 ->getEntityManager()
                 ->createQuery('select t from AGR\Entity\Tag t order by t.id asc')

@@ -61,7 +61,7 @@ $tag->get('/paginado/{pages}/{qtd}', function(Silex\Application $app, $pages, $q
 })->bind("listarTagsPaged");
 
 //listando tag by nome
-$tag->get('/{nome}', function(Silex\Application $app, $nome){
+$tag->get('/nome/{nome}', function(Silex\Application $app, $nome){
    try{
         $tags = $app['tag_service']->findByNome($nome);
         $response = new Response($app['serializer']->serialize($tags, 'json'));

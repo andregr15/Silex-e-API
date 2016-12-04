@@ -20,7 +20,7 @@ class CategoriaRepository extends EntityRepository
     return $this->findByNome($nome);
   }
   
-  public function findAllShortedById(){
+  public function findAllSortedById(){
     return $this
                 ->getEntityManager()
                 ->createQuery('select c from AGR\Entity\Categoria c order by c.id asc')

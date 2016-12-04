@@ -61,7 +61,7 @@ $clientes->get('/paginado/{pages}/{qtd}', function(Silex\Application $app, $page
 })->bind("listarClientesPaged");
 
 //listando cliente by nome
-$clientes->get('/{nome}', function(Silex\Application $app, $nome){
+$clientes->get('/nome/{nome}', function(Silex\Application $app, $nome){
    try{
         $clientes = $app['cliente_service']->findByNome($nome);
         $response = new Response($app['serializer']->serialize($clientes, 'json'));

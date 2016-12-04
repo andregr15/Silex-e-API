@@ -15,12 +15,16 @@ class ProdutoValidator extends Validator{
         $this->dados['nome'] = $request->request->get('nome');
         $this->dados['descricao'] = $request->request->get('descricao');
         $this->dados['valor'] = $request->request->get('valor'); 
+        $this->dados['categoria'] = $request->request->get('categoria');
+        $this->dados['tags'] = $request->request->get('tags');
 
         $constraint = new Assert\Collection(
             array(
                       'nome' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 3))),
                       'descricao' => array(new Assert\NotBlank(), new Assert\Length(array('min' => 3))),
-                      'valor' => array(new Assert\NotBlank(), new Assert\Type(array('type'=>'numeric')))
+                      'valor' => array(new Assert\NotBlank(), new Assert\Type(array('type'=>'numeric'))),
+                      'categoria' => array(new Assert\NotBlank(), new Assert\Regex(array('pattern'=>'/^[0-9]+$/', 'message' => 'This value should be of type integer'))),
+                      'tags' => new Assert\NotBlank()
                  )
         );     
                              

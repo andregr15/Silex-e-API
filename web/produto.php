@@ -10,7 +10,7 @@ require_once 'bootstrap.php';
 $produtos = $app['controllers_factory'];
 
 $app['produto_service'] = function() use ($em){
-      $service = new ProdutoService(new Produto(null, null, null, null), $em->getRepository('AGR\Entity\Produto'));
+      $service = new ProdutoService(new Produto(null, null, null, null), $em->getRepository('AGR\Entity\Produto'), $em->getRepository('AGR\Entity\Categoria'), $em->getRepository('AGR\Entity\Tag'));
       return $service;
 };
 

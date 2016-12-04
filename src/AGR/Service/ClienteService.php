@@ -16,7 +16,7 @@ class ClienteService{
     }
 
     public function findAll(){
-        return $this->clienteRepository->findAllShortedById();        
+        return $this->clienteRepository->findAllShotedById();        
     }
 
      public function findByNome($nome){

@@ -16,7 +16,7 @@ class TagService{
     }
 
     public function findAll(){
-        return $this->tagRepository->findAllShortedById();        
+        return $this->tagRepository->findAllSortedById();        
     }
 
     public function findByNome($nome){

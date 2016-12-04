@@ -16,7 +16,7 @@ class CategoriaService{
     }
 
     public function findAll(){
-        return $this->categoriaRepository->findAllShortedById();        
+        return $this->categoriaRepository->findAllSortedById();        
     }
 
     public function findByNome($nome){

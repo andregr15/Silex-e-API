@@ -20,7 +20,7 @@ class ProdutoRepository extends EntityRepository
     return $this->findByNome($nome);
   }
   
-  public function findAllShortedById(){
+  public function findAllSortedById(){
     return $this
                 ->getEntityManager()
                 ->createQuery('select p from AGR\Entity\Produto p order by p.id asc')

@@ -12,7 +12,7 @@ require_once 'bootstrap.php';
 $produtos = $app['controllers_factory'];
 
 $app['produto_service'] = function() use ($em){
-    $service = new ProdutoService(new Produto(null, null, null, null), $em->getRepository('AGR\Entity\Produto'));
+    $service = new ProdutoService(new Produto(null, null, null, null), $em->getRepository('AGR\Entity\Produto'), $em->getRepository('AGR\Entity\Categoria'), $em->getRepository('AGR\Entity\Tag'));
     return $service;
 };
 
@@ -48,7 +48,7 @@ $produtos->get('/paginado/{pages}/{qtd}', function(Silex\Application $app, $page
 })->bind("listarProdutosPaged");
 
 //listando produto by nome
-$produtos->get('/{nome}', function(Silex\Application $app, $nome){
+$produtos->get('/nome/{nome}', function(Silex\Application $app, $nome){
    try{
         $produtos = $app['produto_service']->findByNome($nome);
         $response = new Response($app['serializer']->serialize($produtos, 'json'));
@@ -68,12 +68,11 @@ $produtos->get('/{id}', function(Silex\Application $app, $id){
         if (count($errors) > 0) {
             return $app->json($errors);
         }
-       
+        
         $produto = $app['produto_service']->buscarProdutoPeloId($id);
         if(!isset($produto)){
             return $app->json(array('produtos api' => 'não existe produto cadastrado com o id '.$id.'!'));
         }
-
         $response = new Response($app['serializer']->serialize($produto, 'json'));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
@@ -112,6 +111,7 @@ $produtos->put('/{id}', function(Silex\Application $app, Request $request, $id){
 $produtos->post('/', function(Silex\Application $app, Request $request){
    try{
         $errors = $app['produto_validator']->validateUpdateData($request);
+        
         if (count($errors) > 0) {
             return $app->json($errors);
         }

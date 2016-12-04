@@ -4,19 +4,25 @@ namespace AGR\Service;
 
 use AGR\Entity\Produto;
 use AGR\Repository\ProdutoRepository;
+use AGR\Repository\CategoriaRepository;
+use AGR\Repository\TagRepository;
 
 class ProdutoService{
 
     private $produto;
     private $produtoRepository;
+    private $categoriaRepository;
+    private $tagRepository;
 
-    public function __construct(Produto $produto, ProdutoRepository $produtoRepository){
+    public function __construct(Produto $produto, ProdutoRepository $produtoRepository, CategoriaRepository $categoriaRepository, TagRepository $tagRepository){
         $this->produto = $produto;
         $this->produtoRepository = $produtoRepository;
+        $this->categoriaRepository = $categoriaRepository;
+        $this->tagRepository = $tagRepository;
     }
 
     public function findAll(){
-        return $this->produtoRepository->findAllShortedById();
+        return $this->produtoRepository->findAllSortedById();
     }
 
     public function findByNome($nome){
@@ -31,6 +37,15 @@ class ProdutoService{
         $this->produto->setNome($dados['nome']);
         $this->produto->setDescricao($dados['descricao']);
         $this->produto->setValor($dados['valor']);
+
+        $this->produto->setCategoria($this->categoriaRepository->getReference('AGR\Entity\Categoria', (int)$dados['categoria']));
+        
+        $tags = explode(",", $dados['tags']);
+
+        foreach($tags as $tag){
+            $this->produto->addTag($this->tagRepository->getReference('AGR\Entity\Tag', $tag));
+        }
+                
         return $this->produtoRepository->insertUpdate($this->produto);
     }
 
@@ -39,6 +54,14 @@ class ProdutoService{
         $produto ->setNome($dados['nome']);
         $produto ->setDescricao($dados['descricao']);
         $produto ->setValor($dados['valor']);
+
+        $produto->setCategoria($this->categoriaRepository->getReference('AGR\Entity\Categoria', (int)$dados['categoria']));
+        
+        $tags = explode(",", $dados['tags']);
+
+        foreach($tags as $tag){
+            $produto->addTag($this->tagRepository->getReference('AGR\Entity\Tag', $tag));
+        }
 
         return $this->produtoRepository->insertUpdate($produto);
     }
