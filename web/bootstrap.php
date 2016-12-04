@@ -3,6 +3,8 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 use AGR\Entity\Cliente;
 use AGR\Entity\Produto;
+use AGR\Entity\Categoria;
+use AGR\Entity\Tag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -53,6 +55,24 @@ $app['produtos'] = function() {
     new Produto(4, "Teclado usb", "teclado usb", 30.00),
     new Produto(5, "Leitor de DVD", "Leitor de DVD", 40.00),
     new Produto(6, "Gravador de DVD", "Grava dvd e cd", 60.00)
+   );
+};
+
+$app['categorias'] = function() {
+  return array(
+    new Categoria(1, "Categoria 1"),
+    new Categoria(2, "Categoria 2"),
+    new Categoria(3, "Categoria 3"),
+    new Categoria(4, "Categoria 4"),
+   );
+};
+
+$app['tags'] = function() {
+  return array(
+    new Tag(1, "Tag 1"),
+    new Tag(2, "Tag 2"),
+    new Tag(3, "Tag 3"),
+    new Tag(4, "Tag 4"),
    );
 };
 

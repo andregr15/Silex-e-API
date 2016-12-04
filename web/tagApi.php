@@ -11,20 +11,33 @@ require_once 'bootstrap.php';
 
 $tag = $app['controllers_factory'];
 
-$app['service'] = function() use ($em){
+$app['tag_service'] = function() use ($em){
     $service = new TagService(new Tag(null, null), $em->getRepository('AGR\Entity\Tag'));
     return $service;
 };
 
-$app['validator'] = function($app){
+$app['tag_validator'] = function($app){
     $validator = new CategoriaTagValidator($app['validator']);
     return $validator;
 };
 
+//fixture
+$tag->get('/fixture', function(Silex\Application $app) use($em) {
+  try{
+    $app['tag_service']->fixture($app['tags'], $em->getConnection());
+  }
+  catch(Exception $e) {
+    $app->abort(500, 'Erro fixture: '.  $e->getMessage(). "\n");
+  }
+
+  return new Response("Fixture executada", 200);
+})
+  ->bind("_tags");
+
 //listando todas as tags
 $tag->get('/', function(Silex\Application $app){
    try{
-        $tags = $app['service']->findAll();
+        $tags = $app['tag_service']->findAll();
         $response = new Response($app['serializer']->serialize($tags, 'json'));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
@@ -37,7 +50,7 @@ $tag->get('/', function(Silex\Application $app){
 //listando todas as tags paged
 $tag->get('/paginado/{pages}/{qtd}', function(Silex\Application $app, $pages, $qtd){
    try{
-        $tags = $app['service']->findPaged($pages, $qtd);
+        $tags = $app['tag_service']->findPaged($pages, $qtd);
         $response = new Response($app['serializer']->serialize($tags, 'json'));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
@@ -50,7 +63,7 @@ $tag->get('/paginado/{pages}/{qtd}', function(Silex\Application $app, $pages, $q
 //listando tag by nome
 $tag->get('/{nome}', function(Silex\Application $app, $nome){
    try{
-        $tags = $app['service']->findByNome($nome);
+        $tags = $app['tag_service']->findByNome($nome);
         $response = new Response($app['serializer']->serialize($tags, 'json'));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
@@ -64,12 +77,12 @@ $tag->get('/{nome}', function(Silex\Application $app, $nome){
 //listando apenas uma tag
 $tag->get('/{id}', function(Silex\Application $app, $id){
    try{
-        $errors = $app['validator']->validateId($id);
+        $errors = $app['tag_validator']->validateId($id);
         if (count($errors) > 0) {
             return $app->json($errors);
         }
        
-        $tag = $app['service']->buscarTagPeloId($id);
+        $tag = $app['tag_service']->buscarTagPeloId($id);
         if(!isset($tag)){
             return $app->json(array('tag api' => 'não existe tag cadastrada com o id '.$id.'!'));
         }
@@ -86,18 +99,18 @@ $tag->get('/{id}', function(Silex\Application $app, $id){
 //atualizar apenas uma tag
 $tag->put('/{id}', function(Silex\Application $app, Request $request, $id){
    try{
-        $errors = $app['validator']->validateInsertData($request, $id);
+        $errors = $app['tag_validator']->validateInsertData($request, $id);
         
         if (count($errors) > 0) {
             return $app->json($errors);
         }
 
-        $tag = $app['service']->buscarTagPeloId($id);
+        $tag = $app['tag_service']->buscarTagPeloId($id);
         if(!isset($tag)){
             return $app->json(array('tag api' => 'não existe tag cadastrada com o id '.$id.'!'));
         }
 
-        $tag = $app['service']->atualizarTag($app['validator']->getDados());
+        $tag = $app['tag_service']->atualizarTag($app['tag_validator']->getDados());
         
         if(isset($tag)){
           return $app->json(array('tag api' => 'tag de id '.$id.' atualizada com sucesso!'));
@@ -111,15 +124,15 @@ $tag->put('/{id}', function(Silex\Application $app, Request $request, $id){
 //inserir uma tag
 $tag->post('/', function(Silex\Application $app, Request $request){
    try{
-        $errors = $app['validator']->validateUpdateData($request);
+        $errors = $app['tag_validator']->validateUpdateData($request);
         if (count($errors) > 0) {
             return $app->json($errors);
         }
 
-        $tag = $app['service']->inserirTag($app['validator']->getDados());
+        $tag = $app['tag_service']->inserirTag($app['tag_validator']->getDados());
         
         if(isset($tag)){
-            return $app->json(array('tag api' => 'tag de id '.$produto->getId().' inserida com sucesso!'));
+            return $app->json(array('tag api' => 'tag de id '.$tag->getId().' inserida com sucesso!'));
         }
     }
     catch(Exception $e) {
@@ -130,17 +143,17 @@ $tag->post('/', function(Silex\Application $app, Request $request){
 //excluindo uma tag
 $tag->delete('/{id}', function(Silex\Application $app, $id){
    try{
-        $errors = $app['validator']->validateId($id);
+        $errors = $app['tag_validator']->validateId($id);
         if (count($errors) > 0) {
             return $app->json($errors);
         }
        
-        $tag = $app['service']->buscarTagPeloId($id);
+        $tag = $app['tag_service']->buscarTagPeloId($id);
         if(!isset($tag)){
             return $app->json(array('tag api' => 'não existe tag cadastrada com o id '.$id.'!'));
         }
 
-        $tag = $app['service']->excluirTag($id);
+        $tag = $app['tag_service']->excluirTag($id);
     
         if(isset($tag)){
             return $app->json(array('tag api' => 'tag de id '.$id.' excluida com sucesso!'));

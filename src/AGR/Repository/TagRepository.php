@@ -46,7 +46,7 @@ class TagRepository extends EntityRepository
     return $tag;
   }
 
-  public function delete(Categoria $tag){
+  public function delete(Tag $tag){
     $this->getEntityManager()->remove($tag);
     $this->getEntityManager()->flush();
     return $tag;
