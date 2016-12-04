@@ -13,12 +13,14 @@ class ProdutoService{
     private $produtoRepository;
     private $categoriaRepository;
     private $tagRepository;
+    private $errors;
 
     public function __construct(Produto $produto, ProdutoRepository $produtoRepository, CategoriaRepository $categoriaRepository, TagRepository $tagRepository){
         $this->produto = $produto;
         $this->produtoRepository = $produtoRepository;
         $this->categoriaRepository = $categoriaRepository;
         $this->tagRepository = $tagRepository;
+        $this->errrors = array();
     }
 
     public function findAll(){
@@ -34,18 +36,18 @@ class ProdutoService{
     }
 
     public function inserirProduto(array $dados){
+        $this->errors = array();
         $this->produto->setNome($dados['nome']);
         $this->produto->setDescricao($dados['descricao']);
         $this->produto->setValor($dados['valor']);
 
-        $this->produto->setCategoria($this->categoriaRepository->getReference('AGR\Entity\Categoria', (int)$dados['categoria']));
+        $this->setCategoria($dados['categoria']);        
+        $this->setTags($dados['tags']);
         
-        $tags = explode(",", $dados['tags']);
-
-        foreach($tags as $tag){
-            $this->produto->addTag($this->tagRepository->getReference('AGR\Entity\Tag', $tag));
+        if($this->errors){
+            return $this->errors;
         }
-                
+
         return $this->produtoRepository->insertUpdate($this->produto);
     }
 
@@ -55,12 +57,11 @@ class ProdutoService{
         $produto ->setDescricao($dados['descricao']);
         $produto ->setValor($dados['valor']);
 
-        $produto->setCategoria($this->categoriaRepository->getReference('AGR\Entity\Categoria', (int)$dados['categoria']));
+        $this->setCategoria($dados['categoria']);        
+        $this->setTags($dados['tags']);
         
-        $tags = explode(",", $dados['tags']);
-
-        foreach($tags as $tag){
-            $produto->addTag($this->tagRepository->getReference('AGR\Entity\Tag', $tag));
+        if($this->errors){
+            return $this->errors;
         }
 
         return $this->produtoRepository->insertUpdate($produto);
@@ -81,6 +82,32 @@ class ProdutoService{
         foreach($produtos as $produto)
         {
             $this->produtoRepository->insert($produto);
+        }
+    }
+
+    private function setCategoria($dado){
+        $categoria = $this->categoriaRepository->loadCategoriaById($dado);
+
+        if(!$categoria){
+            $this->errors[] = array("produtos api" =>"nao existe categoria cadastrada com o id {$dado}!");
+            return;
+        }
+
+        $this->produto->setCategoria($this->categoriaRepository->getReference('AGR\Entity\Categoria', (int)$dado));
+    }
+
+    private function setTags($dados){
+        $tags = explode(",", $dados);
+
+        foreach($tags as $t){
+            $tag = $this->tagRepository->loadTagById($t);
+
+            if(!$tag){
+                $this->errors[] = array("produtos api" =>"nao existe tag cadastrada com o id {$t}!");
+                continue;
+            }
+
+            $this->produto->addTag($this->tagRepository->getReference('AGR\Entity\Tag', $t));
         }
     }
 

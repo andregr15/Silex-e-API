@@ -73,6 +73,7 @@ $produtos->get('/{id}', function(Silex\Application $app, $id){
         if(!isset($produto)){
             return $app->json(array('produtos api' => 'não existe produto cadastrado com o id '.$id.'!'));
         }
+
         $response = new Response($app['serializer']->serialize($produto, 'json'));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
@@ -97,7 +98,11 @@ $produtos->put('/{id}', function(Silex\Application $app, Request $request, $id){
         }
 
         $produto = $app['produto_service']->atualizarProduto($app['produto_validator']->getDados());
-        
+       
+        if(is_array($produto)){
+            return $app->json($produto);
+        }
+       
         if(isset($produto)){
           return $app->json(array('produtos api' => 'produto de id '.$id.' atualizado com sucesso!'));
         }
@@ -117,7 +122,11 @@ $produtos->post('/', function(Silex\Application $app, Request $request){
         }
 
         $produto = $app['produto_service']->inserirProduto($app['produto_validator']->getDados());
-        
+                
+        if(is_array($produto)){
+            return $app->json($produto);
+        }
+
         if(isset($produto)){
             return $app->json(array('produtos api' => 'produto de id '.$produto->getId().' inserido com sucesso!'));
         }
