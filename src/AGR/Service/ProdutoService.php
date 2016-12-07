@@ -43,6 +43,7 @@ class ProdutoService{
 
         $this->setCategoria($dados['categoria']);        
         $this->setTags($dados['tags']);
+        $this->setImagem();
         
         if($this->errors){
             return $this->errors;
@@ -59,6 +60,7 @@ class ProdutoService{
 
         $this->setCategoria($dados['categoria']);        
         $this->setTags($dados['tags']);
+        $this->setImagem();
         
         if($this->errors){
             return $this->errors;
@@ -111,6 +113,35 @@ class ProdutoService{
         }
     }
 
+    private function setImagem(){
+        if(!isset($_FILES['imagem']['name']) || $_FILES['imagem']['error'] != 0) {
+            $this->produto->setImagem(null);
+            return;
+        }
+        
+        $erros = false;
+
+        // Pega a extensão
+        $extensao = pathinfo ( $_FILES['imagem']['name'], PATHINFO_EXTENSION );
+
+        // Converte a extensão para minúsculo
+        $extensao = strtolower ( $extensao );
+
+        if($_FILES['imagem']['size'] > 1048576){
+            $this->errors[] = array("produtos api" =>"imagem muito grande, upload não será realizado(tamanho máximo 1MB)!");
+            $erros = true;
+        }
+        if( !strstr ( '.jpg;.jpeg;.gif;.png', $extensao ) ){
+            $this->errors[] = array("produtos api" =>"são aceitas apenas imagens no formato jpeg, gif ou png!");
+            $erros = true;
+        }
+
+        if($erros) {
+            return;
+        }
+
+        $this->produto->setImagem($_FILES['imagem']);
+    }
 }
 
 

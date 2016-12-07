@@ -4,10 +4,12 @@ namespace AGR\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use AGR\Service\UploadService;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="produto")
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Entity(repositoryClass="AGR\Repository\ProdutoRepository")
  */
 class Produto
@@ -45,6 +47,9 @@ class Produto
     */
     private $tags;
 
+    /** @ORM\Column(length=255) */
+    private $imagem;
+
     public function __construct($id, $nome, $descricao, $valor) {
         $this->id = $id;
         $this->nome = $nome;
@@ -77,6 +82,10 @@ class Produto
         return $this->tags;
     }
 
+    public function getImagem(){
+        return $this->imagem;
+    }
+
     public function setNome($nome){
         $this->nome = $nome;
     }
@@ -95,6 +104,21 @@ class Produto
 
     public function addTag($tag){
         $this->tags->add($tag);
+    }
+
+    public function setImagem($imagem){
+        $this->imagem = $imagem;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     */
+    public function upload(){
+        if (null === $this->imagem) {
+            return;
+        }
+        $this->imagem = UploadService::uploadImagem($this->imagem);
     }
 }
 
